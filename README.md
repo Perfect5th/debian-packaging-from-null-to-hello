@@ -178,3 +178,18 @@ debian/hello-packaging
 ```
 
 You can see that, per our `debian/install` file, the `hello-packaging.sh` file is in `usr/bin`. This means that when installed, it will be installed to `/usr/biYou can see that, per our n`debian/install` file, the `hello-packaging.sh` file is in `usr/bin`. This means that when installed, it will be installed to `/usr/bin`. It's useful to examine this tree after building to make sure things ended up in the intended places.
+
+### Test installation
+
+If you want to, you can also install the `.deb` directly:
+
+``` sh
+sudo apt install ../hello-packaging_1.0.0-0nulltohello1_all.deb
+```
+
+Immediately after installation, you should be able to execute it:
+
+``` sh
+$ hello-packaging.sh
+Hello Debian packaging world!
+```
