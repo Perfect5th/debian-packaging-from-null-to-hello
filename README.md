@@ -259,7 +259,7 @@ actual binary is a single shell script that echoes a 'hello' message.
 To print the message
 .SH I/O:
 
-\fBlandscape-client\fP
+\fBhello-packaging\fP
 
 .SH AUTHOR
 Your Fullname <youremail@example.com>
@@ -269,6 +269,14 @@ And save this as `debian/manpages`, which tells the build tools where to find th
 
 ``` text
 debian/hello-packaging.1
+```
+
+### Step 9: Build again!
+
+Now you should be able to build without any lintian errors or warnings:
+
+```sh
+debuild -us -uc -i
 ```
 
 ## Things you can do next
