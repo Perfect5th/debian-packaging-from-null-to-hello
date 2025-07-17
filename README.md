@@ -8,6 +8,8 @@ By continuing on through steps 7 to `TODO`, you'll get a binary package suitable
 
 The repository starts off with pretty much nothing except this README and a single script file, `hello-packaging`. You'll be adding everything needed to package and install that script.
 
+If you want to cheat and see what the end result looks like, check out the `debian/latest` branch.
+
 ## Requirements
 
 - A installation of a Linux distribution that has these packages installed:
@@ -31,7 +33,7 @@ The upstream tarball always has a name with this format: `PACKAGENAME_VERSION.or
 To create one from the "source" of this repository, use `tar`:
 
 ``` sh
-tar -czf ../hello-packaging_1.0.0.orig.tar.gz README.md hello-packaging.sh
+tar -czf ../hello-packaging_1.0.0.orig.tar.gz README.md hello-packaging
 ```
 
 If you're not familiar with `tar`, `-czf` means "create (`c`) and compress (`z`) to this file (`f`)".
@@ -70,7 +72,7 @@ hello-packaging (1.0.0-0nulltohello1) UNRELEASED; urgency=medium
  -- Your Fullname <youremail@example.com>  Wed, 16 Jul 2025 22:58:43 +0000
 ```
 
-And you can save it just like that. If you were releasing this to, for example, Ubuntu 24.04 Noble Numbat, you could change `UNRELEASED` to `noble`.
+Delete the `(Closes: #XXXXXX)` and save it. If you were releasing this to, for example, Ubuntu 24.04 Noble Numbat, you could change `UNRELEASED` to `noble`.
 
 The reason we added `-0nulltohello1` to the version is because everything after the `-` is the "Debian revision".
 
@@ -93,7 +95,7 @@ Build-Depends: debhelper-compat (= 13)
 Package: hello-packaging
 Architecture: all
 Depends: ${misc:Depends}
-Description: A demo Debian package
+Description: Demo Debian package
  hello-packaging serves as a quick demo for how to debianize software.
 ```
 
@@ -168,7 +170,7 @@ debian/hello-packaging
 │   └── md5sums
 └── usr
     ├── bin
-    │   └── hello-packaging.sh
+    │   └── hello-packaging
     └── share
         └── doc
             └── hello-packaging
@@ -190,6 +192,41 @@ sudo apt install ../hello-packaging_1.0.0-0nulltohello1_all.deb
 Immediately after installation, you should be able to execute it:
 
 ``` sh
-$ hello-packaging.sh
+$ hello-packaging
 Hello Debian packaging world!
+```
+
+## Step 8: Resolving lintian warnings
+
+The Debian build tools include a linter called `lintian` that emits a number of warnings and errors at the end of the build process. Resolving these gets you a long way toward having a package ready for upload, but the output can be a bit mysterious:
+
+``` text
+E: hello-packaging: no-copyright-file
+W: hello-packaging source: missing-debian-source-format
+W: hello-packaging source: no-debian-copyright-in-source
+W: hello-packaging: no-manual-page [usr/bin/hello-packaging.sh]
+```
+
+`E:` means error and `W:` means warning.
+
+The first and only error is pretty obvious: we need a copyright file at `debian/copyright`. This is the copyright file for the _packaging_, not the source code. I don't expect you to be a copyright expert, so we'll just copy GPLv3 from our distros collection of copyright files:
+
+``` sh
+cp /usr/share/common-licenses/GPL debian/copyright
+```
+
+The first warning means we're missing `debian/source/format`, which tells the build tools what format we are using to indicate Debian "patches". Patches are diff files that apply changes to the source code prior to build and are used when we want to apply our own changes to the upstream software. For example, if we wanted to backport a fix to a version that the upstream maintainers no longer support.
+
+Create `debian/source/format` and add a single line:
+
+``` text
+3.0 (quilt)
+```
+
+The next warning, `no-debian-copyright-in-source` is taken care of by adding `debian/copyright`.
+
+The next warning, `no-manual-page` tells us we should have a manual page in `/usr/share/man` for `hello-packaging.sh`. We can add an empty one easily:
+
+``` sh
+touch debian/hello-packaging.1
 ```
