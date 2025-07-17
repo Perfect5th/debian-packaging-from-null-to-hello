@@ -1,0 +1,12 @@
+Source: hello-packaging
+Maintainer: Your Fullname <youremail@example.com>
+Section: misc
+Priority: optional
+Standards-Version: 4.6.2
+Build-Depends: debhelper-compat (= 13)
+
+Package: hello-packaging
+Architecture: all
+Depends: ${misc:Depends}
+Description: Demo Debian package
+ hello-packaging serves as a quick demo for how to debianize software.
